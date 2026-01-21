@@ -1,4 +1,5 @@
 import 'package:flashback/models/flashback.dart';
+import 'package:flashback/utility/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -14,8 +15,40 @@ class AddFlashbackPage extends StatelessWidget {
 
   final TextEditingController _contentController = TextEditingController();
 
-  void _onSubmit() async {
+  void _onSubmit(BuildContext context) async {
     String content = _contentController.text;
+
+    if (content.length <= 5) {
+      await showInformationModal(
+        context, // ignore: use_build_context_synchronously
+        "Invalid Input",
+        "Content must be at least 5 characters long.",
+      );
+      return;
+    }
+
+    LocationPermission locationPermission = await Geolocator.checkPermission();
+    List<LocationPermission> requestForPermission = [
+      LocationPermission.denied,
+      LocationPermission.unableToDetermine
+    ];
+    List<LocationPermission> allowedPermission = [
+      LocationPermission.always,
+      LocationPermission.whileInUse
+    ];
+
+    if (requestForPermission.contains(locationPermission)) {
+      locationPermission = await Geolocator.requestPermission();
+    }
+
+    if (!allowedPermission.contains(locationPermission)) {
+      await showInformationModal(
+        context, // ignore: use_build_context_synchronously
+        "Can't get location...",
+        "Could not obtain permission to use location, please make sure it is enabled.",
+      );
+      return;
+    }
 
     Position position = await Geolocator.getCurrentPosition();
 
@@ -62,7 +95,7 @@ class AddFlashbackPage extends StatelessWidget {
             ),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _onSubmit,
+                onPressed: () => _onSubmit(context),
                 label: Text("Add"),
                 icon: Icon(Icons.add),
               ),

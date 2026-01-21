@@ -47,8 +47,13 @@ class _MainApp extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigoAccent),
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
       home: Scaffold(
         appBar: AppBar(title: const Text("Flashback")),
+
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 32),
           child: currentPage == "ViewFlashbacksPage"
@@ -56,7 +61,10 @@ class _MainApp extends State<MainApp> {
                   switchPage: _switchPage,
                   flashbacks: flashbacks,
                 )
-              : AddFlashbackPage(switchPage: _switchPage, addFlashback: _addFlashback),
+              : AddFlashbackPage(
+                  switchPage: _switchPage,
+                  addFlashback: _addFlashback,
+                ),
         ),
       ),
     );
