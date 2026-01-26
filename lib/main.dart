@@ -2,29 +2,38 @@ import 'package:flashback/models/flashback.dart';
 import 'package:flashback/pages/add_flashback_page.dart';
 import 'package:flashback/pages/view_flashbacks_page.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(FlashbackAdapter());
+
+  Box<Flashback> flashbackStore = await Hive.openBox(
+    "flashbackStore",
+  );
+
+  runApp(MainApp(flashbackStore: flashbackStore));
 }
 
+// ignore: must_be_immutable
 class MainApp extends StatefulWidget {
-  const MainApp({super.key});
+  Box<Flashback> flashbackStore;
+
+  MainApp({super.key, required this.flashbackStore});
 
   @override
   State<StatefulWidget> createState() {
-    return _MainApp();
+    return _MainAppState();
   }
 }
 
-class _MainApp extends State<MainApp> {
+class _MainAppState extends State<MainApp> {
   String currentPage = "ViewFlashbacksPage";
-  List<Flashback> flashbacks = [
-    Flashback(
-      text: "eee",
-      latitude: 35.86617738480747,
-      longitude: 14.517315815810383,
-    ),
-  ];
+  late List<Flashback> flashbacks = widget.flashbackStore.values
+      .whereType<Flashback>()
+      .toList();
 
   void _switchPage(String page) {
     setState(() {
@@ -32,13 +41,17 @@ class _MainApp extends State<MainApp> {
     });
   }
 
-  void _addFlashback(Flashback flashback) {
+  Future<void> _addFlashback(Flashback flashback) async {
+    await widget.flashbackStore.add(flashback);
+
     setState(() {
       flashbacks.add(flashback);
     });
   }
 
-  void _removeFlashback(Flashback flashback) {
+  Future<void> _removeFlashback(Flashback flashback) async {
+    await flashback.delete();
+
     setState(() {
       flashbacks.remove(flashback);
     });

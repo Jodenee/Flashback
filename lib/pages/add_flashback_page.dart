@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 
 class AddFlashbackPage extends StatelessWidget {
   final void Function(String) switchPage;
-  final void Function(Flashback) addFlashback;
+  final Future<void> Function(Flashback) addFlashback;
 
   AddFlashbackPage({
     super.key,
@@ -57,7 +57,7 @@ class AddFlashbackPage extends StatelessWidget {
       latitude: position.latitude,
       longitude: position.longitude,
     );
-    addFlashback(flashback);
+    await addFlashback(flashback);
     switchPage("ViewFlashbacksPage");
   }
 

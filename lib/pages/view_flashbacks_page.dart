@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class ViewFlashbacksPage extends StatelessWidget {
   final void Function(String) switchPage;
-  final void Function(Flashback) removeFlashback;
+  final Future<void> Function(Flashback) removeFlashback;
   List<Flashback> flashbacks;
 
   ViewFlashbacksPage({

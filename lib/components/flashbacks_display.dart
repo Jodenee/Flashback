@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class FlashbacksDisplay extends StatefulWidget {
   List<Flashback> flashbacks;
-  final void Function(Flashback) removeFlashback;
+  final Future<void> Function(Flashback) removeFlashback;
 
   FlashbacksDisplay({
     super.key,
@@ -30,8 +30,8 @@ class _FlashbacksDisplayState extends State<FlashbacksDisplay> {
         return Dismissible(
           key: UniqueKey(),
           onDismissed: (direction) {
-            setState(() {
-              widget.removeFlashback(flashback);
+            setState(() async {
+              await widget.removeFlashback(flashback);
             });
           },
           child: FlashbackDisplay(flashback: flashback),
