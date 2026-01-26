@@ -5,16 +5,27 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class ViewFlashbacksPage extends StatelessWidget {
   final void Function(String) switchPage;
+  final void Function(Flashback) removeFlashback;
   List<Flashback> flashbacks;
 
-  ViewFlashbacksPage({super.key, required this.switchPage, required this.flashbacks});
+  ViewFlashbacksPage({
+    super.key,
+    required this.switchPage,
+    required this.removeFlashback,
+    required this.flashbacks,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       spacing: 18,
       children: [
-        Expanded(child: FlashbacksDisplay(flashbacks: flashbacks)),
+        Expanded(
+          child: FlashbacksDisplay(
+            flashbacks: flashbacks,
+            removeFlashback: removeFlashback,
+          ),
+        ),
         ElevatedButton.icon(
           onPressed: () => switchPage("AddFlashbackPage"),
           label: Text("Create Flashback"),

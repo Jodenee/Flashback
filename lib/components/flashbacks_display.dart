@@ -5,8 +5,13 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class FlashbacksDisplay extends StatefulWidget {
   List<Flashback> flashbacks;
+  final void Function(Flashback) removeFlashback;
 
-  FlashbacksDisplay({super.key, required this.flashbacks});
+  FlashbacksDisplay({
+    super.key,
+    required this.flashbacks,
+    required this.removeFlashback,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -20,9 +25,17 @@ class _FlashbacksDisplayState extends State<FlashbacksDisplay> {
     return ListView.separated(
       itemCount: widget.flashbacks.length,
       itemBuilder: (ctx, index) {
-        Flashback flashback = widget.flashbacks[index];
+        final Flashback flashback = widget.flashbacks[index];
 
-        return FlashbackDisplay(flashback: flashback);
+        return Dismissible(
+          key: UniqueKey(),
+          onDismissed: (direction) {
+            setState(() {
+              widget.removeFlashback(flashback);
+            });
+          },
+          child: FlashbackDisplay(flashback: flashback),
+        );
       },
       separatorBuilder: (BuildContext context, int index) =>
           SizedBox(height: 10),

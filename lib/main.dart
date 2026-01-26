@@ -59,6 +59,7 @@ class _MainApp extends State<MainApp> {
           child: currentPage == "ViewFlashbacksPage"
               ? ViewFlashbacksPage(
                   switchPage: _switchPage,
+                  removeFlashback: _removeFlashback,
                   flashbacks: flashbacks,
                 )
               : AddFlashbackPage(
