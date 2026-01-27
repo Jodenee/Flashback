@@ -3,19 +3,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flashback/models/flashback.dart';
 import 'package:flashback/pages/add_flashback_page.dart';
 import 'package:flashback/pages/view_flashbacks_page.dart';
+import 'package:flashback/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
   await Hive.initFlutter();
+
   Hive.registerAdapter(FlashbackAdapter());
 
-  Box<Flashback> flashbackStore = await Hive.openBox(
-    "flashbackStore",
-  );
+  Box<Flashback> flashbackStore = await Hive.openBox("flashbackStore");
 
   runApp(MainApp(flashbackStore: flashbackStore));
 }
@@ -39,6 +40,13 @@ class _MainAppState extends State<MainApp> {
       .toList();
   final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
+  @override
+  void initState() {
+    super.initState();
+
+    LocalNotificationService.initialize();
+  }
+
   void _switchPage(String page) {
     setState(() {
       currentPage = page;
@@ -46,13 +54,16 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> _addFlashback(Flashback flashback) async {
-    analytics.logEvent(name: "AddFlashback", parameters: {
-      "Flashback": {
-        "text": flashback.text,
-        "latitude": flashback.latitude,
-        "longitude": flashback.longitude
-      }
-    });
+    analytics.logEvent(
+      name: "AddFlashback",
+      parameters: {
+        "Flashback": {
+          "text": flashback.text,
+          "latitude": flashback.latitude,
+          "longitude": flashback.longitude,
+        },
+      },
+    );
     await widget.flashbackStore.add(flashback);
 
     setState(() {
@@ -61,18 +72,26 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> _removeFlashback(Flashback flashback) async {
-    analytics.logEvent(name: "RemoveFlashback", parameters: {
-      "Flashback": {
+    await analytics.logEvent(
+      name: "RemoveFlashback",
+      parameters: {
         "text": flashback.text,
         "latitude": flashback.latitude,
-        "longitude": flashback.longitude
-      }
-    });
+        "longitude": flashback.longitude,
+      },
+    );
     await flashback.delete();
 
     setState(() {
       flashbacks.remove(flashback);
     });
+
+    if (await Permission.notification.request().isGranted) {
+      await LocalNotificationService.display(
+        "Flashback Removed",
+        "Removed flashback \"${flashback.text}\"",
+      );
+    }
   }
 
   @override

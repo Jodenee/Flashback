@@ -29,10 +29,8 @@ class _FlashbacksDisplayState extends State<FlashbacksDisplay> {
 
         return Dismissible(
           key: UniqueKey(),
-          onDismissed: (direction) {
-            setState(() async {
-              await widget.removeFlashback(flashback);
-            });
+          onDismissed: (direction) async {
+            await widget.removeFlashback(flashback);
           },
           child: FlashbackDisplay(flashback: flashback),
         );
