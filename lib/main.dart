@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flashback/models/flashback.dart';
 import 'package:flashback/pages/add_flashback_page.dart';
 import 'package:flashback/pages/view_flashbacks_page.dart';
@@ -7,6 +9,7 @@ import 'package:hive_flutter/adapters.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp();
   await Hive.initFlutter();
   Hive.registerAdapter(FlashbackAdapter());
 
@@ -34,6 +37,7 @@ class _MainAppState extends State<MainApp> {
   late List<Flashback> flashbacks = widget.flashbackStore.values
       .whereType<Flashback>()
       .toList();
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   void _switchPage(String page) {
     setState(() {
@@ -42,6 +46,13 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> _addFlashback(Flashback flashback) async {
+    analytics.logEvent(name: "AddFlashback", parameters: {
+      "Flashback": {
+        "text": flashback.text,
+        "latitude": flashback.latitude,
+        "longitude": flashback.longitude
+      }
+    });
     await widget.flashbackStore.add(flashback);
 
     setState(() {
@@ -50,6 +61,13 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<void> _removeFlashback(Flashback flashback) async {
+    analytics.logEvent(name: "RemoveFlashback", parameters: {
+      "Flashback": {
+        "text": flashback.text,
+        "latitude": flashback.latitude,
+        "longitude": flashback.longitude
+      }
+    });
     await flashback.delete();
 
     setState(() {

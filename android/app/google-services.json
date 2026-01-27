@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "321821596377",
+    "project_id": "flashback-333cf",
+    "storage_bucket": "flashback-333cf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321821596377:android:2deae6a589c0011b0efcc8",
+        "android_client_info": {
+          "package_name": "com.example.flashback"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXs_3MQwu2Bgx48kMW7Ux9NgNh4W6L3U8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
